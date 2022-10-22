@@ -28,5 +28,5 @@ jobs:
           push: true
           tags: |
             decioajr/kube-news:latest
-            decioajr/kube-news:${{github.run_number}}
+            decioajr/kube-news:v${{github.run_number}}
             
