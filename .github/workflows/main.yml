@@ -1,0 +1,32 @@
+name: CI-CD
+
+on:
+  push:
+    branches: [ "main" ]
+  
+  workflow_dispatch:
+  
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    
+    steps: 
+      - uses: actions/checkout@v3
+      
+      - name: Docker Login
+        uses: docker/login-action@v2.1.0
+        with:
+          # Server address of Docker registry. If not set then will default to Docker Hub
+          username: ${{secrets.DOCKERHUB_USER}}
+          password: ${{secrets.DOCKERHUB_PWD}}
+          
+      - name: Build and push Docker images   
+        uses: docker/build-push-action@v3.2.0
+        with:
+          file: ./src/Dockerfile
+          context: ./src
+          push: true
+          tags: |
+            decioajr/kube-news:latest
+            decioajr/kube-news:${{github.run_number}}
+            
