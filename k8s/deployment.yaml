@@ -1,0 +1,84 @@
+# Deployment do Postgre
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgree
+spec:
+  selector:
+    matchLabels:
+      app: postgre-lbl
+  template:
+    metadata:
+      labels:
+        app: postgre-lbl
+    spec:
+      containers:
+        - name: postgre
+          image: postgres:14.3
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "kube#123"
+            - name: POSTGRES_USER
+              value: "kubenews"
+            - name: POSTGRES_DB
+              value: "kubenews" 
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgre
+spec:
+  selector:
+    app: postgre-lbl
+  ports:
+    - port: 5432
+      targetPort: 5432 # E a porta direcionada para o Pod  
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubenews-lbl
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubenews-lbl
+  template:
+    metadata:
+      labels:
+        app: kubenews-lbl
+    spec:
+      containers:
+      - name: kubenews
+        image: decioajr/kube-news:v1
+        env:
+        - name: DB_DATABASE
+          value: "kubenews"
+        - name: DB_USERNAME
+          value: "kubenews"
+        - name: DB_PASSWORD
+          value: "kube#123"
+        - name: DB_HOST
+          value: "postgre"   #Nome do service
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubenews-svc-lbl
+spec: 
+  selector:
+    app: kubenews-lbl
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30000 # Cluster k3d expoe a porta 30000
+  type: LoadBalancer # Vai gerar IP de acesso a DigitalOcean
