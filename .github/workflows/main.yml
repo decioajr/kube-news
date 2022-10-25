@@ -30,7 +30,9 @@ jobs:
             decioajr/kube-news:latest
             decioajr/kube-news:v${{github.run_number}}
       - name: Verificando SonarQube Quality Gate
-        uses: SonarSource/sonarqube-quality-gate-action@v1.0.0
+        uses: SonarSource/sonarqube-scan-action@v1.1.0
+        with:
+          projectBaseDir: ./src/
        
             
   CD:
