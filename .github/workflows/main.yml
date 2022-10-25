@@ -13,14 +13,14 @@ jobs:
     steps: 
       - uses: actions/checkout@v3
       
-      - name: Docker Login
+      - name: Autenticando o usuario Docker
         uses: docker/login-action@v2.1.0
         with:
           # Server address of Docker registry. If not set then will default to Docker Hub
           username: ${{secrets.DOCKERHUB_USER}}
           password: ${{secrets.DOCKERHUB_PWD}}
           
-      - name: Build and push Docker images   
+      - name: Construindo a imagem e enviando para o DockerHub   
         uses: docker/build-push-action@v3.2.0
         with:
           file: ./src/Dockerfile
@@ -36,12 +36,12 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-      - name: Kubernetes Set Context
+      - name: Definindo o KubeConfig
         uses: Azure/k8s-set-context@v3
         with:
            method: kubeconfig
            kubeconfig: ${{secrets.K8S_CONFIG}}
-      - name: Deploy to Kubernetes cluster
+      - name: Deploy no Cluster Kubernetes
         uses: Azure/k8s-deploy@v4.5
         with:
           manifests: |
